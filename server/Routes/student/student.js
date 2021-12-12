@@ -10,7 +10,8 @@ router.post('/register', async (req, res) => {
         email,
         password:plaintext,
         dob,
-        gender
+        gender,
+        courses
     } = req.body;
 
     if(typeof name != 'string'){
@@ -33,7 +34,8 @@ router.post('/register', async (req, res) => {
             email,
             password,
             dob,
-            gender
+            gender,
+            courses
         })
         console.log("New student created successfully", newStudent);
         res.send("Successfully added the data!!!")
@@ -60,6 +62,107 @@ router.post('/sign-in', async (req, res) => {
         return res.json({status: 'ok', msg: 'Sucessfully login', data: getStudent })
     } else{
         return res.json({status: 'ok', msg: 'Email Id or password not matched!!'})
+    }
+})
+
+router.post('/:student_id/enroll_new_course', async (req, res) => {
+    const {
+        student_id
+    } = req.params;
+    const {
+        course_id,
+        course_enrolled_date,
+        course_fees,
+        course_lessons,
+        final_assessment
+    } = req.body;
+
+    const newCourse = {
+        course_id,
+        course_enrolled_date,
+        course_fees,
+        course_lessons,
+        final_assessment
+    }
+
+    const filter = {'_id': student_id}
+    try{
+        let addCourse = await students.updateOne(filter,
+            {$push: {'courses': newCourse}}    
+        )
+        console.log("New course added");
+        res.send("New course enrolled successfully!!!")
+    } catch(err){
+        throw err;
+    }
+})
+
+router.post('/:student_id/:course_id/add_new_lesson', async (req, res) => {
+    const {
+        student_id,
+        course_id
+    } = req.params;
+
+    const {
+        lesson_id,
+        lesson_title,
+        lesson_obtained_marks,
+        lesson_total_marks
+    } = req.body;
+
+    const newLesson = {
+        lesson_id,
+        lesson_title,
+        lesson_obtained_marks,
+        lesson_total_marks
+    }
+
+    try{
+        let addLesson = await students.updateOne(
+            {'_id': student_id, "course_id": course_id},
+            {
+                "$push":
+                {
+                    "courses.$[].course_lessons": newLesson
+                }
+            }
+        )
+        res.send("New lesson added to the course");
+        console.log("new lesson added to the course");    
+    } catch(err){
+        throw err;
+    }
+})
+
+router.post('/:student_id/:course_id/add_final_assessment', async (req, res) => {
+    const {
+        student_id,
+        course_id
+    } = req.params;
+
+    const {
+        assessment_id,
+        assessment_obtained_marks,
+        assessment_total_marks
+    } = req.body
+
+    const newFinalAssessment = {
+        assessment_id,
+        assessment_obtained_marks,
+        assessment_total_marks
+    }
+
+    try{
+        addAssessment = await students.updateOne(
+            {'_id': student_id, 'course_id': course_id},
+            {
+                "courses.$[].final_assessment" : newFinalAssessment
+            }
+        )
+        console.log("Final assessment updated");
+        res.send("Final assessment added to the course");
+    }catch(err){
+        throw err;
     }
 })
 

@@ -44,16 +44,31 @@ router.post('/register', async (req, res) => {
     console.log(req.body)
 })
 
+router.post('/sign-in', async (req, res) => {
+    const {email, password} = req.body;
+    const getTeacher = await teachers.findOne({email}).lean();
+    if(!getTeacher){
+        res.json({status: 'ok', msg: 'Email not found!!!'})
+    }
+    if(await bcrypt.compare(password, getTeacher.password)){
+        return res.json({status: 'ok', msg: 'Teacher login successfull'})
+    }
+    else{
+        return res.json({status: 'ok', msg: 'Incoreect email or password!!!'})
+    }
+})
+
 router.get('/teacher_list', (req, res) => {
-    const getRecords = teachers.find({}).lean()
-    res.send(getRecords)
+    teachers.find((err, docs) => {
+        if(err) throw err;
+        res.send(docs)
+    })
 })
 
 router.get('/:id', async (req, res) => {
     const {id} = req.params;
     const getTeacher = await teachers.findOne({'_id':id}).lean()
     res.send(getTeacher)
-    
 })
 
 router.put('/register/:id', async (req, res) => {
@@ -81,6 +96,29 @@ router.put('/register/:id', async (req, res) => {
         console.log("Teacher updated", updateTeacher);
         res.send('got the response')
     } catch(err){
+        throw err;
+    }
+})
+
+
+router.post('/:teacher_id/add-experience', async (req, res) => {
+    const {
+        lang_name,
+        lang_exp
+    } = req.body;
+    const {teacher_id} = req.params;
+    const filter = {'_id': teacher_id}
+    const newElement = {
+        lang_name,
+        lang_exp
+    }
+    try{
+        let addElement = await teachers.updateOne(filter, 
+            {$push: {'known_programming_lang': newElement }}    
+        )
+        console.log("Added the new element", addElement)
+        res.send("Updated the response");
+    }catch(err){
         throw err;
     }
 })
