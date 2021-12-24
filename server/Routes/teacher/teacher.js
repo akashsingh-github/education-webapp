@@ -41,10 +41,9 @@ router.post('/register', async (req, res) => {
         }
         throw err;
     }
-    console.log(req.body)
 })
 
-router.post('/sign-in', async (req, res) => {
+router.post('/sign_in', async (req, res) => {
     const {email, password} = req.body;
     const getTeacher = await teachers.findOne({email}).lean();
     if(!getTeacher){
@@ -71,7 +70,7 @@ router.get('/:id', async (req, res) => {
     res.send(getTeacher)
 })
 
-router.put('/register/:id', async (req, res) => {
+router.put('/update_teacher/:id', async (req, res) => {
     const {id} = req.params;
 
     const {
@@ -101,7 +100,7 @@ router.put('/register/:id', async (req, res) => {
 })
 
 
-router.post('/:teacher_id/add-experience', async (req, res) => {
+router.post('/:teacher_id/add_experience', async (req, res) => {
     const {
         lang_name,
         lang_exp
@@ -122,5 +121,11 @@ router.post('/:teacher_id/add-experience', async (req, res) => {
         throw err;
     }
 })
+
+// course_list
+// course_student_list
+// add_course
+// add_lesson
+// add_final_assessment
 
 module.exports = router;

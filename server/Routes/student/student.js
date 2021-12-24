@@ -48,7 +48,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.post('/sign-in', async (req, res) => {
+router.post('/sign_in', async (req, res) => {
     const {
         email,
         password
@@ -65,7 +65,11 @@ router.post('/sign-in', async (req, res) => {
     }
 })
 
+// enrolling a new course
+
 router.post('/:student_id/enroll_new_course', async (req, res) => {
+    // remain: adding billing information 
+    
     const {
         student_id
     } = req.params;
@@ -96,6 +100,8 @@ router.post('/:student_id/enroll_new_course', async (req, res) => {
         throw err;
     }
 })
+
+// particular course updated after taking lesson assessment
 
 router.post('/:student_id/:course_id/add_new_lesson', async (req, res) => {
     const {
@@ -133,6 +139,8 @@ router.post('/:student_id/:course_id/add_new_lesson', async (req, res) => {
         throw err;
     }
 })
+
+// final assessment of particular course
 
 router.post('/:student_id/:course_id/add_final_assessment', async (req, res) => {
     const {
