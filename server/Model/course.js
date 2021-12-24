@@ -68,6 +68,10 @@ const lessonSchema = mongoose.Schema({
 })
 
 const finalAssessmentSchema = mongoose.Schema({
+    lesson_id: {
+        type: String,
+        required: true
+    },
     total_marks: {
         type: String,
         required: true
@@ -105,8 +109,7 @@ const courseSchema = mongoose.Schema({
         required: true
     },
     isAuthorized: {
-        type: String,
-        required: true
+        type: String
     },
     course_lessons: [lessonSchema],
     course_students : [studentSchema],
